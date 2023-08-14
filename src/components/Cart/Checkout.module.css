@@ -18,8 +18,10 @@
   font: inherit;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 20rem;
+  width: 100%;
   max-width: 100%;
+  font-size: 14px;
+  padding: 0px 0px 0px 4px;
 }
 
 .actions {

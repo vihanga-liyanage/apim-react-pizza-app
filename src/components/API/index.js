@@ -37,8 +37,26 @@ export async function getMenu() {
 
 }
 
-// request the token
-// subscribe to this event and use the returned json to save your token to state or session storage
+export async function sendOrder(token, orderDataString) {
+
+  try {
+    let response = await fetch(`${config.apiBaseUrl}/order`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: orderDataString
+    });
+    let responseJson = await response.json();
+    return responseJson;
+  } catch(error) {
+    throw error;
+  }
+
+}
+
+// Get an access token using client credential grant
 export async function getAccessToken() {
   
   var options = {

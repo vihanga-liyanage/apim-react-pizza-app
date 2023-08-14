@@ -1,10 +1,11 @@
 import classes from "./Cart.module.css";
 import Modal from "../UI/Modal";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import CartContext from "../../store/cart-context";
 import CartItem from "./CartItem";
 import Checkout from "./Checkout";
 import { useAuthContext } from "@asgardeo/auth-react";
+import { sendOrder } from "../API";
 
 const Cart = (props) => {
   const cartCtx = useContext(CartContext);
@@ -13,8 +14,29 @@ const Cart = (props) => {
   const hasItems = cartCtx.items.length > 0;
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [didSubmit, setDidSubmit] = useState(false);
-  const { state, signIn, signOut } = useAuthContext();
+  const [isSubmitError, setIsSubmitError] = useState(false);
+  const [submitErrorMsg, setSubmitErrorMsg] = useState("");
+  const { state, signIn, signOut, getBasicUserInfo, getIDToken } = useAuthContext();
+  const [ token, setToken ] = useState(null);
+  const [ userInfo, setUserInfo ] = useState(null);
   
+  useEffect(() => {
+      getIDToken().then((idToken) => {
+        setToken(idToken);
+      }).catch((error) => {
+        console.log(error);
+      })
+  }, [state.isAuthenticated]);
+
+  useEffect(() => {
+    getBasicUserInfo().then((data) => {
+      setUserInfo(data);
+      console.log(data);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }, [state.isAuthenticated]);
+
   const cartHandlerRemoveHandler = (id) => {
     cartCtx.removeItem(id);
   };
@@ -29,19 +51,29 @@ const Cart = (props) => {
 
   const submitOrderHandler = async (userData) => {
     setIsSubmiting(true);
-    const response = await fetch(
-      "https://pizza-order-app-238e1-default-rtdb.europe-west1.firebasedatabase.app/orders.json",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          user: userData,
-          orderedItems: cartCtx.items,
-        }),
-      }
-    );
-    setIsSubmiting(false);
-    setDidSubmit(true);
-    cartCtx.clearCart();
+
+    const orderData = {
+      "customerName": userData.name,
+      "delivered": false,
+      "address": userData.address,
+      "pizzaType": cartCtx.items[0].name,
+      "creditCardNumber": "xxxx xxxx xxxx xxxx",
+      "quantity": cartCtx.items[0].amount,
+    };
+  
+    const orderResponse = await sendOrder(token, JSON.stringify(orderData));
+
+    if (orderResponse.description) {
+      setIsSubmiting(false);
+      setDidSubmit(true);
+      setIsSubmitError(true);
+      setSubmitErrorMsg(orderResponse.description)
+    } else {
+      setIsSubmiting(false);
+      setDidSubmit(true);
+      setIsSubmitError(false);
+      cartCtx.clearCart();
+    }
   };
 
   const cartItems = (
@@ -64,7 +96,7 @@ const Cart = (props) => {
       <button className={classes["button--alt"]} onClick={props.onClick}>
         Close
       </button>
-      {hasItems && (
+      { hasItems && (
         <button onClick={orderHandler} className={classes.button}>
           Checkout
         </button>
@@ -80,16 +112,26 @@ const Cart = (props) => {
         <span>{totalAmount}</span>
       </div>
       {isCheckout && (
-        <Checkout onConfirm={submitOrderHandler} onCancel={props.onClick} auth={{ state, signIn, signOut}}/>
+        <Checkout onConfirm={submitOrderHandler} onCancel={props.onClick} auth={{ state, signIn, signOut}} userInfo={userInfo}/>
       )}
       {!isCheckout && modalActions}
     </React.Fragment>
   );
 
   const isSubmitingModalContent = <p>Sending order data...</p>;
+
   const didSubmitModalContent = (
     <React.Fragment>
-      <p>Your order has been sent!</p>
+      { isSubmitError && (
+        <div>
+          <p>Something went wrong with placing your order!</p>
+          <p style={{'color': 'red'}}>{ submitErrorMsg }</p>
+        </div>
+      ) }
+      { !isSubmitError && (
+        <p>Your order was placed!</p>
+      )}
+
       <div className={classes.actions}>
         <button className={classes["button--alt"]} onClick={props.onClick}>
           Close
@@ -97,6 +139,7 @@ const Cart = (props) => {
       </div>
     </React.Fragment>
   );
+
   return (
     <Modal onClick={props.onClick}>
       {!isSubmiting && !didSubmit && cartModalContent}

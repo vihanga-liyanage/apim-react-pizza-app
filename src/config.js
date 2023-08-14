@@ -7,11 +7,11 @@ const appConfig = {
 
   tokenBaseUrl: 'https://localhost:9443',
 
-  signInRedirectURL: "https://localhost:3000",
-  signOutRedirectURL: "https://localhost:3000",
+  signInRedirectURL: "http://localhost:3000",
+  signOutRedirectURL: "http://localhost:3000",
   clientID: "nbfdlGVCx9fjYGH6qReu5PKG8sQa",
-  baseUrl: "https://api.asgardeo.io/t/keells",
-  scope: [ "openid","profile" ]
+  baseUrl: "https://localhost:9443",
+  scope: [ "openid", "profile", "address", "phone", "orderCreate" ]
 };
 
 export default appConfig;
