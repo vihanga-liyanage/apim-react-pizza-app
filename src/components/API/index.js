@@ -70,7 +70,7 @@ export async function getAccessToken() {
     config.clientID + '&client_secret=' + config.clientSecret;
   
   try {
-    let response = await fetch(`${config.tokenBaseUrl}/oauth2/token?${params}`, options);
+    let response = await fetch(`${config.baseUrl}/oauth2/token?${params}`, options);
     let responseJson = await response.json();
 
     return responseJson;
