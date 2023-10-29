@@ -3,7 +3,10 @@ import Header from "../Layout/Header";
 import Pizzas from "../Meals/Pizzas";
 import Cart from "../Cart/Cart";
 import Footer from "../Layout/Footer";
+
 const UserPanel = (props) => {
+
+  console.log("Loading user panel");
   const [cartIsShown, setCartIsShown] = useState(false);
 
   const showCartHandler = () => {

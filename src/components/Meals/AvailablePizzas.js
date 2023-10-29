@@ -8,37 +8,42 @@ const AvailablePizzas = () => {
   const [menuList, setMenuList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const fetchMenuHandler = useCallback(async () => {
 
-    setIsLoading(true);
-    setError(null);
-    try {
+    if (menuList.length == 0) {
+      setIsLoading(true);
+      setError(null);
 
-      const menuResponse = await getMenu();
+      try {
 
-      if (menuResponse.description) {
-        setMenuList([]);
-        setError(menuResponse.description);
-      } else {
-        setError("");
-        const loadedMenu = [];
+        const menuResponse = await getMenu();
 
-        for (const key in menuResponse) {
-          loadedMenu.push({
-            id: key,
-            name: menuResponse[key].name,
-            ingredients: menuResponse[key].description,
-            price: menuResponse[key].price,
-          });
+        if (menuResponse.description) {
+          setMenuList([]);
+          setError(menuResponse.description);
+        } else {
+          setError("");
+          const loadedMenu = [];
+
+          for (const key in menuResponse) {
+            loadedMenu.push({
+              id: key,
+              name: menuResponse[key].name,
+              ingredients: menuResponse[key].description,
+              price: menuResponse[key].price,
+            });
+          }
+          setMenuList(loadedMenu);
         }
-        setMenuList(loadedMenu);
+        
+      } catch (error) {
+        setMenuList([]);
+        setError(error.toString());
       }
-      
-    } catch (error) {
-      setMenuList([]);
-      setError(error.toString());
+      setIsLoading(false);
     }
-    setIsLoading(false);
+    
   }, []);
 
   useEffect(() => {

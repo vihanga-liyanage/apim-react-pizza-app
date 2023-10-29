@@ -10,6 +10,8 @@ import { AuthProvider } from '@asgardeo/auth-react';
 import appConfig from './config';
 
 function App() {
+
+  console.log("Loading App");
   const [isAdminSignedIn, setIsAdminSignedIn] = useState(false);
   const [isModalShown, setIsModalShown] = useState(false);
   const [enteredLogin, setEnteredLogin] = useState("");

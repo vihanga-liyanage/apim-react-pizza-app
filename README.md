@@ -14,6 +14,7 @@ Credits to the original author - https://github.com/Wydreq/Pizza-order-app
 
 ## How to run
 - Deploy the pizza-shack sample API in the API Manager.
+- Enable CORS configurations for the OAuth 2 token encpoints. (https://stackoverflow.com/a/76826333/4281517)
 - Create an application, set **Client Credentials** and **Code** as allowed grant types, and generate OAuth2 keys.
 - Add a subscription to the Pizza API from the application.
 - Clone the repository.

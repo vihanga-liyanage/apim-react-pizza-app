@@ -6,6 +6,8 @@ let access_token = '';
 
 export async function getMenu() {
 
+  console.log("getMenu");
+
   if (!config.clientID || !config.clientSecret) {
     return {
       error: 'Error',

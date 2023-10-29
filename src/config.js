@@ -3,7 +3,7 @@
 const appConfig = {
   clientID: '',
   clientSecret: '',
-  apiBaseUrl: 'https://localhost:8243/am/sample/pizzashack/v1/api/v1',
+  apiBaseUrl: 'https://localhost:8243/pizzashack/1.0.0',
 
   signInRedirectURL: "http://localhost:3000",
   signOutRedirectURL: "http://localhost:3000",
